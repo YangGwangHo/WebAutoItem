@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+    PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">
+ 
+<configuration>
+       
+    <typeAliases>
+        <typeAlias type="com.user.domain.User" alias="User" />
+        <typeAlias type="com.user.domain.Board" alias="Board" />
+        <typeAlias type="com.user.domain.Comment" alias="Comment" />        
+    </typeAliases>
+ 
+    <mappers>
+        <mapper resource="mapper/UserMapper.xml" />
+        <mapper resource="mapper/LoginMapper.xml" />
+        <mapper resource="mapper/BoardMapper.xml" />
+        <mapper resource="mapper/CommentMapper.xml" />
+        
+        
+    </mappers>
+ 
+</configuration>

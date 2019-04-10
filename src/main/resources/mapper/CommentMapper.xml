@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.user.mappers.CommentMapper">
+<insert id="commentInsert" parameterType="com.user.domain.Comment">
+ 	INSERT INTO COMMENTS (C_IDX,B_IDX,TEXT,CREATE_ID,CREATE_NAME)
+ 	VALUES (SEQ_COMMENTS_IDX.NEXTVAL,#{b_idx},#{commentText},#{commentUserId},#{commentUserName})
+ </insert>
+ 
+ <select id="commentList" resultType="com.user.domain.Comment">
+ 	SELECT * FROM(
+		SELECT ROWNUM AS rn, A.* FROM(
+		 	SELECT C_IDX, B_IDX, TEXT as commentText, CREATE_ID as commentUserId, CREATE_NAME as commentUserName, CREATE_DATE, UPDATE_DATE
+		 	FROM COMMENTS
+		 	WHERE B_IDX=#{b_idx}
+		 	ORDER BY C_IDX
+		) A
+	) WHERE rn BETWEEN #{start} AND #{end}
+
+ </select>
+ 
+ <select id="commentCount" resultType="int">
+ 	SELECT COUNT(*) FROM COMMENTS WHERE B_IDX=#{b_idx} 
+ </select>
+ 
+ <update id="commentCntUpdate" parameterType="com.user.domain.Comment">
+ 	UPDATE BOARD
+ 	SET COMMENT_CNT = (SELECT COUNT(*) FROM COMMENTS WHERE B_IDX=#{b_idx})
+ 	WHERE IDX=#{b_idx}
+ </update>
+ 
+ <select id="commentUpdateView" resultType="com.user.domain.Comment">
+ 	SELECT C_IDX,B_IDX,TEXT as commentText,CREATE_ID as commentUserId,CREATE_NAME as commentUserName,CREATE_DATE,UPDATE_DATE FROM COMMENTS
+ 	WHERE C_IDX = #{c_idx}
+ </select>
+ 
+ <delete id="commentDelete">
+ 	DELETE FROM COMMENTS
+ 	WHERE C_IDX=#{c_idx}
+ </delete>
+ 
+  <update id="commentUpdate" parameterType="com.user.domain.Comment">
+ 	UPDATE COMMENTS
+ 	SET TEXT=#{commentText}
+ 	WHERE C_IDX=#{c_idx}
+ </update>
+ 
+ 
+</mapper>

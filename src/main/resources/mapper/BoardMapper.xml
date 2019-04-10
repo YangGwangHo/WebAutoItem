@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.user.mappers.BoardMapper">
+   
+	<select id="selectBoardList" resultType="com.user.domain.Board">
+	SELECT * FROM(
+		SELECT ROWNUM AS rn, A.* FROM(
+			SELECT 
+			IDX,TITLE,HIT_CNT,CREATE_DATE,CREATE_NAME,(SELECT COUNT(*) FROM COMMENTS WHERE IDX=B_IDX) AS COMMENT_CNT
+			FROM
+			BOARD
+			<include refid="search"></include>
+			ORDER BY IDX DESC,CREATE_DATE DESC
+		) A
+	) WHERE rn BETWEEN #{start} AND #{end}
+	</select>	
+	
+	<select id="selectBoardListCnt" resultType="int">
+	SELECT COUNT(*) FROM BOARD
+	<include refid="search"></include>	
+	</select>
+	
+	<sql id="search">
+	<choose>
+		<when test="searchOption == 'all'">
+			WHERE DEL_CHK = 'N' AND (CREATE_NAME like '%'||#{keyword}||'%'
+			OR CONTENTS like '%'||#{keyword}||'%'
+			OR TITLE like '%'||#{keyword}||'%')
+		</when>
+		<otherwise>
+			WHERE DEL_CHK = 'N' AND (${searchOption} like '%'||#{keyword}||'%')
+		</otherwise>
+	</choose>
+	</sql>
+	
+	<insert id="insert">
+		INSERT INTO BOARD (IDX,TITLE,CONTENTS,CREATE_ID,CREATE_NAME)
+		VALUES (SEQ_BOARD_IDX.NEXTVAL,#{title,jdbcType=VARCHAR},#{contents,jdbcType=VARCHAR},#{create_id,jdbcType=VARCHAR},#{create_name,jdbcType=VARCHAR})
+		
+	</insert>
+	
+	<select id="view" resultType="com.user.domain.Board">
+		SELECT * FROM BOARD
+		WHERE IDX = #{idx}
+	</select>
+	
+	<update id="increaseViewCnt">
+		UPDATE BOARD SET HIT_CNT = HIT_CNT+1 WHERE IDX = #{idx}
+	</update>
+	
+	<update id="update">
+		UPDATE BOARD SET
+			TITLE = #{title},
+			CONTENTS = #{contents}
+		WHERE IDX = #{idx}
+	</update>
+	
+	<update id="delete">
+		UPDATE BOARD SET
+			DEL_CHK = 'Y'
+		WHERE IDX = #{idx}
+	</update>
+	
+</mapper>
